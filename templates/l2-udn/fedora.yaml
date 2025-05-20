@@ -44,7 +44,7 @@ spec:
           rng: {}
         resources:
           requests:
-            memory: 2048M
+            memory: 4Gi
       networks:
       - pod: {}
         name: primary-udn

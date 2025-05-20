@@ -55,7 +55,7 @@ spec:
           rng: {}
         resources:
           requests:
-            memory: 4Gi
+            memory: 2Gi
       evictionStrategy: LiveMigrate
       networks:
       - name: default
