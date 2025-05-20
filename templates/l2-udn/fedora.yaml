@@ -1,0 +1,62 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  labels:
+    kubevirt.io/vm: fedora-udn
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  name: fedora-udn
+  namespace: udn-vm
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: fedora-udn
+      spec:
+        sourceRef:
+          kind: DataSource
+          name: fedora
+          namespace: openshift-virtualization-os-images
+        storage:
+          resources:
+            requests:
+              storage: 30Gi
+  runStrategy: Always
+  template:
+    metadata:
+      name: fedora-udn
+      namespace: udn-vm
+    spec:
+      domain:
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: rootdisk
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+          interfaces:
+          - name: primary-udn
+            binding:
+              name: l2bridge
+          rng: {}
+        resources:
+          requests:
+            memory: 2048M
+      networks:
+      - pod: {}
+        name: primary-udn
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - dataVolume:
+          name: fedora-udn
+        name: rootdisk
+      - cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            user: fedora
+            password: fedora
+            chpasswd: { expire: False }
+        name: cloudinitdisk
