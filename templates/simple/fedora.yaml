@@ -61,7 +61,7 @@ spec:
         machine:
           type: pc-q35-rhel9.4.0
         memory:
-          guest: 6Gi
+          guest: 2Gi
       evictionStrategy: LiveMigrate
       networks:
       - name: default
