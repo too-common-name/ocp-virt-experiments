@@ -22,12 +22,17 @@ spec:
           resources:
             requests:
               storage: 30Gi
-  runStrategy: Always
+  runStrategy: RerunOnFailure
   template:
     metadata:
       name: fedora-udn
       namespace: udn-vm
     spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
       domain:
         devices:
           disks:
