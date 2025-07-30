@@ -1,0 +1,199 @@
+apiVersion: v1
+items:
+- apiVersion: kubevirt.io/v1
+  kind: VirtualMachine
+  metadata:
+    labels:
+      app: fedora-1
+      kubevirt.io/dynamic-credentials-support: "true"
+      vm.kubevirt.io/template: fedora-server-small
+      vm.kubevirt.io/template.namespace: openshift
+      vm.kubevirt.io/template.revision: "1"
+      vm.kubevirt.io/template.version: v0.32.2
+    annotations:
+      argocd.argoproj.io/sync-wave: "5"
+    name: fedora-1
+    namespace: secondarynet-mnp
+  spec:
+    dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: fedora-1
+      spec:
+        sourceRef:
+          kind: DataSource
+          name: fedora
+          namespace: openshift-virtualization-os-images
+        storage:
+          resources:
+            requests:
+              storage: 30Gi
+    runStrategy: RerunOnFailure
+    template:
+      metadata:
+        annotations:
+          vm.kubevirt.io/flavor: small
+          vm.kubevirt.io/os: fedora
+          vm.kubevirt.io/workload: server
+        creationTimestamp: null
+        labels:
+          kubevirt.io/domain: fedora-1
+          kubevirt.io/size: small
+          network.kubevirt.io/headlessService: headless
+      spec:
+        architecture: amd64
+        domain:
+          cpu:
+            cores: 1
+            sockets: 1
+            threads: 1
+          devices:
+            disks:
+            - disk:
+                bus: virtio
+              name: rootdisk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+            interfaces:
+            - macAddress: 02:4b:d9:00:00:0d
+              masquerade: {}
+              model: virtio
+              name: default
+            - bridge: {}
+              macAddress: 02:4b:d9:00:00:0e
+              model: virtio
+              name: ovn-localnet
+            rng: {}
+          features:
+            acpi: {}
+            smm:
+              enabled: true
+          firmware:
+            bootloader:
+              efi: {}
+          machine:
+            type: pc-q35-rhel9.4.0
+          memory:
+            guest: 2Gi
+          resources: {}
+        networks:
+        - name: default
+          pod: {}
+        - multus:
+            networkName: ovn-localnet
+          name: ovn-localnet
+        terminationGracePeriodSeconds: 180
+        volumes:
+        - dataVolume:
+            name: fedora-1
+          name: rootdisk
+        - cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              user: fedora
+              password: fedora
+              chpasswd:
+                expire: false
+          name: cloudinitdisk
+- apiVersion: kubevirt.io/v1
+  kind: VirtualMachine
+  metadata:
+    annotations:
+      argocd.argoproj.io/sync-wave: "5"
+    labels:
+      app: fedora-2
+      kubevirt.io/dynamic-credentials-support: "true"
+      vm.kubevirt.io/template: fedora-server-small
+      vm.kubevirt.io/template.namespace: openshift
+      vm.kubevirt.io/template.revision: "1"
+      vm.kubevirt.io/template.version: v0.32.2
+    name: fedora-2
+    namespace: secondarynet-mnp
+  spec:
+    dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: fedora-2
+      spec:
+        sourceRef:
+          kind: DataSource
+          name: fedora
+          namespace: openshift-virtualization-os-images
+        storage:
+          resources:
+            requests:
+              storage: 30Gi
+    runStrategy: RerunOnFailure
+    template:
+      metadata:
+        annotations:
+          vm.kubevirt.io/flavor: small
+          vm.kubevirt.io/os: fedora
+          vm.kubevirt.io/workload: server
+        labels:
+          app: fedora-2
+          kubevirt.io/domain: fedora-2
+          kubevirt.io/size: small
+          network.kubevirt.io/headlessService: headless
+      spec:
+        architecture: amd64
+        domain:
+          cpu:
+            cores: 1
+            sockets: 1
+            threads: 1
+          devices:
+            disks:
+            - disk:
+                bus: virtio
+              name: rootdisk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+            interfaces:
+            - macAddress: 02:4b:d9:00:00:0b
+              masquerade: {}
+              model: virtio
+              name: default
+            - bridge: {}
+              macAddress: 02:4b:d9:00:00:0c
+              model: virtio
+              name: ovn-localnet
+            rng: {}
+          features:
+            acpi: {}
+            smm:
+              enabled: true
+          firmware:
+            bootloader:
+              efi: {}
+          machine:
+            type: pc-q35-rhel9.4.0
+          memory:
+            guest: 2Gi
+          resources: {}
+        networks:
+        - name: default
+          pod: {}
+        - multus:
+            networkName: ovn-localnet
+          name: ovn-localnet
+        terminationGracePeriodSeconds: 180
+        volumes:
+        - dataVolume:
+            name: fedora-2
+          name: rootdisk
+        - cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              user: fedora
+              password: fedora
+              chpasswd:
+                expire: false
+          name: cloudinitdisk
+kind: List
+metadata:
+  resourceVersion: ""

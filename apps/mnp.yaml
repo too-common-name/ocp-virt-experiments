@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mnp
+  namespace: openshift-gitops
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: templates/secondary-net-mnp
+    repoURL: https://github.com/too-common-name/ocp-virt-gitops.git
+    targetRevision: HEAD

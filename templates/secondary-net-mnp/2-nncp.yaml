@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: List
+metadata:
+  resourceVersion: ""
+items:
+- apiVersion: nmstate.io/v1
+  kind: NodeNetworkConfigurationPolicy
+  metadata:
+    name: remove-linux-br
+    annotations:
+      argocd.argoproj.io/sync-wave: "2"
+  spec:
+    desiredState:
+      interfaces:
+      - bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+          - name: enp3s0
+        description: OVS bridge with enp3s0 as a port
+        ipv4:
+          dhcp: false
+          enabled: false
+        name: br-flat
+        state: absent
+        type: linux-bridge
+    nodeSelector:
+      node-role.kubernetes.io/worker: ""
+- apiVersion: nmstate.io/v1
+  kind: NodeNetworkConfigurationPolicy
+  metadata:
+    name: br-flat
+    annotations:
+      argocd.argoproj.io/sync-wave: "3"
+  spec:
+    desiredState:
+      interfaces:
+      - bridge:
+          options:
+            stp: true
+          port:
+          - name: enp3s0
+        description: |-
+          A dedicated OVS bridge with enp3s0 as a port
+          allowing all VLANs and untagged traffic
+        name: br0
+        state: up
+        type: ovs-bridge
+      ovn:
+        bridge-mappings:
+        - bridge: br0
+          localnet: br0-network
+          state: present
+    nodeSelector:
+      node-role.kubernetes.io/worker: ""
