@@ -15,6 +15,8 @@ This repository provides a GitOps approach for managing Virtual Machines (VMs) i
 
 ## 📘 Usage Guide
 
+**NOTE:** The `secondary-net-mnp` setup is designed for a specific lab environment. Your setup might not require interface reconfiguration (meaning your `templates/secondary-net-mnp/nncp.yaml` might not need the remove rule). To use Multi-Network Policy, you must run `oc patch network.operator.openshift.io cluster --type=merge -p '{"spec":{"useMultiNetworkPolicy":true}}'` before creating the ArgoCD app.
+
 1. Fork this repo into your own GitHub account using CLI or UI.
 
 ```bash
