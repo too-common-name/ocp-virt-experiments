@@ -1,0 +1,25 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-conf
+  namespace: ephemeral-live-migration
+immutable: false
+data:
+  default.conf: |-
+    upstream ocp_hello_app {
+        server hello-service:8080;
+    }
+
+    server {
+        listen 8080 default_server;
+        server_name _; 
+
+        location / {
+            proxy_pass http://ocp_hello_app;
+
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }

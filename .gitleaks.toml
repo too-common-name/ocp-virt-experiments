@@ -2,5 +2,6 @@
   description = "Global Allowlist"
 
   paths = [
-    '''templates\/''',
+    '''gitops\/templates\/''',
+    '''live-migration-ephemeral-vm\/4-vm.yaml''',
   ]

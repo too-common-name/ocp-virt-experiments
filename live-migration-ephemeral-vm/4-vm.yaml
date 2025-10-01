@@ -1,0 +1,74 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  labels:
+    app: nginx-ephemeral
+  name: nginx-ephemeral
+  namespace: ephemeral-live-migration
+spec:
+  runStrategy: RerunOnFailure
+  template:
+    metadata:
+      labels:
+        app: nginx-ephemeral
+        kubevirt.io/domain: nginx-ephemeral
+    spec:
+      architecture: amd64
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+          - bootOrder: 2
+            disk:
+              bus: virtio
+            name: cloudinitdisk
+          - bootOrder: 1
+            disk:
+              bus: virtio
+            name: disk-moccasin-sloth-34
+          - disk:
+              bus: virtio
+            name: nginx-conf-disk
+            serial: IRUNIV
+          interfaces:
+          - masquerade: {}
+            model: virtio
+            name: default
+          rng: {}
+        features:
+          acpi: {}
+          smm:
+            enabled: true
+        firmware:
+          bootloader:
+            efi: {}
+        memory:
+          guest: 2Gi
+        resources: {}
+      networks:
+      - name: default
+        pod: {}
+      terminationGracePeriodSeconds: 180
+      volumes:
+      - cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            user: nginx
+            password: nginx
+            chpasswd: { expire: False }
+            packages:
+              - nginx
+            runcmd:
+              - mount /dev/disk/by-id/virtio-IRUNIV /etc/nginx/conf.d/
+              - setsebool -P httpd_can_network_connect on
+              - systemctl enable --now nginx
+        name: cloudinitdisk
+      - containerDisk:
+          image: quay.io/containerdisks/fedora:42
+        name: disk-moccasin-sloth-34
+      - configMap:
+          name: nginx-conf
+        name: nginx-conf-disk
