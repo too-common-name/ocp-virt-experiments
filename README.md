@@ -6,6 +6,7 @@ This repository contains a series of hands-on experiments to explore the feature
 
 * **[live-migration-ephemeral-vm](./live-migration-ephemeral-vm/):** An analysis of live migration for completely stateless (ephemeral) virtual machines, provisioned via `containerDisk`. The experiment uses a Fedora VM with NGINX as a reverse proxy for an application in a Pod.
 * **[gitops](./gitops/):** Some GitOps experiments (check the folder README).
+* **[aarq](./aarq/):** Comparison between `Application Aware Resource Quota` and `Resource Quota` for OpenShift Virtualization.
 
 ## ⚠️ Project Goal 
 

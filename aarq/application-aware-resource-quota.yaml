@@ -1,0 +1,10 @@
+apiVersion: aaq.kubevirt.io/v1alpha1
+kind: ApplicationAwareResourceQuota
+metadata:
+  name: example-application-aware-resource-quota
+spec:
+  hard:
+    requests.cpu/vmi: "3"
+    requests.memory/vmi: 5Gi
+    limits.cpu/vmi: "6"
+    limits.memory/vmi: 10Gi
